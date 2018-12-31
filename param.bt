@@ -1,0 +1,32 @@
+//------------------------------------------------
+//--- 010 Editor v9.0 Binary Template
+//
+//      File: param.bt
+//   Authors: jam1garner
+//   Version: 1.0
+//   Purpose: Smash Ultimate General Information
+//  Category: Data
+// File Mask: *.prc
+//  ID Bytes: 70 61 72 61 63 6F 62 6E 
+//   History: Smash Ultimate
+//   1.0   2018-12-31 jam1garner: Initial Commit
+//------------------------------------------------
+
+LittleEndian();
+
+struct Header {
+    char magic[8]<bgcolor=cYellow>; // paracobn
+    uint hashTableSize<bgcolor=cBlue>;
+    uint dataSectionSize<bgcolor=cLtBlue>;
+} header;
+
+struct HashTable {
+    struct HashLengthPair {
+        uint crc32<bgcolor=cPurple>;
+        uint length<bgcolor=cLtRed>;
+    } tableEntries[(int)(header.hashTableSize / 8)];
+} hashTable;
+
+struct DataSection {
+    ubyte data[header.dataSectionSize]<bgcolor=cGreen>;
+} dataSection;
