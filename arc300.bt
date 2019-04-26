@@ -1,0 +1,41 @@
+//------------------------------------------------
+//--- 010 Editor v9.0 Binary Template
+//
+//      File: ARC 3.0
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef uint64 u64;
+typedef uint32 u32;
+typedef ubyte u8;
+
+LittleEndian();
+DisplayFormatHex();
+
+struct HEADER {
+    u64 magic; // 0xABCDEF9876543210
+    u64 musicSectionOffset;
+    u64 fileSectionOffset;
+    u64 file2SectionOffset;
+    u64 nodeSectionOffset;
+    u64 unkSectionOffset;
+} arc_header;
+
+struct COMP_TABLE_HEADER {
+    u32 size; // 0x10
+    u32 unk;
+    u32 compSize;
+    u32 nextTable;
+};
+
+FSeek(arc_header.nodeSectionOffset);
+struct COMP_TABLE {
+    COMP_TABLE_HEADER header;
+    u8 compressed_table[header.compSize];
+} comp_table;

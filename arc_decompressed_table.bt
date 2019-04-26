@@ -1,0 +1,171 @@
+//------------------------------------------------
+//--- 010 Editor v9.0 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef uint64 u64;
+typedef uint32 u32;
+typedef uint32 u16;
+typedef ubyte u8;
+
+LittleEndian();
+DisplayFormatHex();
+
+struct NODE_HEADER {
+    u32 filesize;
+    u32 fileInfoCount;
+    u32 unkOffsetSizeCount;
+    u32 folderCount;
+
+    u32 fileCount1;
+
+    u32 hashFolderCount;
+    u32 fileInformationCount;
+    u32 lastTableCount;
+    u32 subFileCount;
+
+    u32 fileCount2;
+    u32 subFileCount2;
+    u32 unk11;
+    u32 unk1_10;
+    u32 unk2_10;
+    u32 unk13;
+    u32 unk14;
+} node_header;
+
+FSeek(0x58 + (0xE * 12));
+
+struct NODE_HEADER_2 {
+    u32 unk3;
+    u32 part1Count;
+    u32 part2Count;
+    u32 part3Size;
+
+    u32 unk5;
+    u32 unk6;
+    u32 unk7;
+    u32 unk8;
+
+    u32 unk9;
+    u32 unk10;
+    u32 unk11;
+
+    u32 unk12;
+    u32 unk13;
+} node_header2;
+
+FSkip(0x8 * node_header2.part1Count);
+struct StreamNameToHashEntry {
+    u32 hash;
+    u32 nameLength;
+    u32 flags;
+} streamNameToHashTable[node_header2.part1Count];
+
+struct StreamIndexToFileEntry {
+    u32 fileIndex;
+} streamIndexToFileTable[node_header2.part2Count];
+
+struct StreamOffsetEntry {
+    u64 size;
+    u64 offset;
+} offsets[node_header2.part3Size];
+
+struct UNK_COUNTS {
+    u32 count1;
+    u32 count2;
+} unk_counts;
+
+FSkip((unk_counts.count2 + unk_counts.count1) * 8);
+
+struct FileInformationPath {
+    u32 path;
+    u32 directoryIndex;
+    u32 extension;
+    u32 fileTableFlag;
+
+    u32 parent;
+    u32 unk5;
+    u32 hash2;
+    u32 unk6;
+} fileInfos[node_header.fileInfoCount];
+
+struct FileInformationIndex {
+    u32 someIndex1;
+    u32 someIndex2;
+} fileInfoIndices[node_header.unkOffsetSizeCount];
+
+struct SomeFolderThing {
+    u32 hash;
+    u32 offset;
+} someFolderThing[node_header.folderCount];
+
+struct DIRECTORY_INFO {
+    u32 hashID;
+    u32 dirOffsetIndex;
+    u32 nameHash;
+    u32 parentHash;
+
+    u32 hash4;
+    u32 firstFileIndex;
+    u32 unk;
+    u32 firstFileIndex;
+
+    u32 fileInformationStartIndex;
+    u32 fileInformationCount;
+    u32 fileNameStartIndex;
+    u16 fileNameCount;
+    u16 unk4;
+
+    u32 unk5;
+} directoryList[node_header.folderCount];
+
+struct DIRECTORY_OFFSETS {
+    u64 offset;
+    u32 decompSize;
+    u32 size;
+    u32 subDataStartIndex;
+    u32 subDataCount;
+    u32 resourceIndex;
+};
+
+DIRECTORY_OFFSETS offsets1[node_header.fileCount1];
+DIRECTORY_OFFSETS offsets2[node_header.fileCount2];
+
+struct FolderHashIndex {
+    u32 hash;
+    u32 count;
+} hashFolderCounts[node_header.hashFolderCount];
+
+struct FileInformationV2 {
+    u32 hashIndex;
+    u32 hashIndex2;
+
+    u32 subFileIndex;
+    u32 flags;
+} fileInfoV2 [node_header.fileInformationCount + node_header.subFileCount2];
+
+struct FileInfoSubIndex {
+    u32 someIndex1;
+    u32 someIndex2;
+    u32 someIndex3;
+} fileInfoSubIndex[node_header.lastTableCount + node_header.subFileCount2];
+
+struct SUB_FILE_INFO {
+    u32 offset;
+    u32 compSize;
+    u32 decompSize;
+    u32 flags;
+};
+
+local u64 subFileInfoStart = FTell();
+SUB_FILE_INFO subFileInfos1[node_header.subFileCount];
+local u64 subFileInfoStart2 = FTell();
+SUB_FILE_INFO subFileInfos2[node_header.subFileCount2];
